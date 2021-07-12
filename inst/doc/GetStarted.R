@@ -14,7 +14,7 @@ test_recipe <- dat %>%
   recipe() %>%
   update_role(y, new_role = "outcome") %>%
   update_role(x0, x1, x2, x3, new_role = "predictor") %>%
-  step_normalize(all_predictors())
+  step_normalize(all_numeric_predictors())
 
 ## -----------------------------------------------------------------------------
 print(test_recipe)
@@ -72,6 +72,16 @@ newdata <- dat[1:5, ]
 test_workflow_fit %>%
   predict(
     new_data = newdata,
-    type = "conf_int"
+    type = "conf_int",
+    level = 0.95
+  )
+
+## ----eval = run_on_linux------------------------------------------------------
+test_workflow_fit %>%
+  predict(
+    new_data = newdata,
+    type = "conf_int",
+    level = 0.95,
+    std_error = TRUE
   )
 
