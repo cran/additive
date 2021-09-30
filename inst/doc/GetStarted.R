@@ -57,7 +57,7 @@ print(test_workflow_fit)
 
 ## ----eval = run_on_linux------------------------------------------------------
 test_fit <- test_workflow_fit %>%
-  pull_workflow_fit()
+  extract_fit_parsnip()
 
 ## ----eval = run_on_linux------------------------------------------------------
 gam_fit <- test_fit$fit

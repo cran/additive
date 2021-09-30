@@ -379,8 +379,19 @@ additive_make <- function(modes = c("classification", "regression")) {
           pre = NULL,
           post = function(results, object) {
             if (length(object$lvl) == 2) {
+              if (is.array(results)) {
+                results <- as.vector(results)
+              }
+              threshold <- getOption("class_pred.threshold", 0.5)
+              if (is.numeric(threshold)) {
+                if (threshold < 0 & threshold > 1) {
+                  rlang::abort("Probability threshold is out of 0-1 range.")
+                }
+              } else {
+                rlang::abort("Probability threshold should be numeric.")
+              }
               results <- ifelse(
-                results >= 0.5,
+                results >= threshold,
                 object$lvl[2],
                 object$lvl[1]
               )
@@ -447,11 +458,10 @@ additive_make <- function(modes = c("classification", "regression")) {
             hf_lvl <- (1 - object$spec$method$pred$conf_int$extras$level) / 2
             const <-
               stats::qt(hf_lvl, df = object$fit$df.residual, lower.tail = FALSE)
-            trans <- object$fit$family$linkinv
             res_2 <-
               tibble::tibble(
-                lo = trans(results$fit - const * results$se.fit),
-                hi = trans(results$fit + const * results$se.fit)
+                lo = results$fit - const * results$se.fit,
+                hi = results$fit + const * results$se.fit
               )
             res_1 <- res_2
             res_1$lo <- 1 - res_2$hi
@@ -471,7 +481,7 @@ additive_make <- function(modes = c("classification", "regression")) {
           args = list(
             object = rlang::expr(object$fit),
             newdata = rlang::expr(new_data),
-            type = "link",
+            type = "response",
             se.fit = TRUE
           )
         )
@@ -488,11 +498,10 @@ additive_make <- function(modes = c("classification", "regression")) {
             hf_lvl <- (1 - object$spec$method$pred$pred_int$extras$level) / 2
             const <-
               stats::qt(hf_lvl, df = object$fit$df.residual, lower.tail = FALSE)
-            trans <- object$fit$family$linkinv
             res_2 <-
               tibble::tibble(
-                lo = trans(results$fit - const * results$se.fit),
-                hi = trans(results$fit + const * results$se.fit)
+                lo = results$fit - const * results$se.fit,
+                hi = results$fit + const * results$se.fit
               )
             res_1 <- res_2
             res_1$lo <- 1 - res_2$hi
@@ -512,7 +521,7 @@ additive_make <- function(modes = c("classification", "regression")) {
           args = list(
             object = rlang::expr(object$fit),
             newdata = rlang::expr(new_data),
-            type = "link",
+            type = "response",
             se.fit = TRUE
           )
         )
@@ -548,11 +557,10 @@ additive_make <- function(modes = c("classification", "regression")) {
             hf_lvl <- (1 - object$spec$method$pred$conf_int$extras$level) / 2
             const <-
               stats::qt(hf_lvl, df = object$fit$df.residual, lower.tail = FALSE)
-            trans <- object$fit$family$linkinv
             res <-
               tibble::tibble(
-                .pred_lower = trans(results$fit - const * results$se.fit),
-                .pred_upper = trans(results$fit + const * results$se.fit)
+                .pred_lower = results$fit - const * results$se.fit,
+                .pred_upper = results$fit + const * results$se.fit
               )
             # In case of inverse or other links
             if (any(res$.pred_upper < res$.pred_lower)) {
@@ -570,7 +578,7 @@ additive_make <- function(modes = c("classification", "regression")) {
           args = list(
             object = rlang::expr(object$fit),
             newdata = rlang::expr(new_data),
-            type = "link",
+            type = "response",
             se.fit = TRUE
           )
         )
@@ -587,11 +595,10 @@ additive_make <- function(modes = c("classification", "regression")) {
             hf_lvl <- (1 - object$spec$method$pred$pred_int$extras$level) / 2
             const <-
               stats::qt(hf_lvl, df = object$fit$df.residual, lower.tail = FALSE)
-            trans <- object$fit$family$linkinv
             res <-
               tibble::tibble(
-                .pred_lower = trans(results$fit - const * results$se.fit),
-                .pred_upper = trans(results$fit + const * results$se.fit)
+                .pred_lower = results$fit - const * results$se.fit,
+                .pred_upper = results$fit + const * results$se.fit
               )
             # In case of inverse or other links
             if (any(res$.pred_upper < res$.pred_lower)) {
@@ -609,7 +616,7 @@ additive_make <- function(modes = c("classification", "regression")) {
           args = list(
             object = rlang::expr(object$fit),
             newdata = rlang::expr(new_data),
-            type = "link",
+            type = "response",
             se.fit = TRUE
           )
         )

@@ -65,7 +65,7 @@ For example, if we didn't specify the family initially or set it to something el
 that we now wanted to change, we could use the `update` method as follows
 
 
-````{r}
+```{r}
 test_model <- test_model %>%
   update(family = gaussian())
 ```
@@ -107,7 +107,7 @@ To extract the parsnip model fit from the workflow
 
 ```{r eval = run_on_linux}
 test_fit <- test_workflow_fit %>%
-  pull_workflow_fit()
+  extract_fit_parsnip()
 ```
 
 The `gamObject` object is stored in the `fit` slot
