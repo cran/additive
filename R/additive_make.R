@@ -28,7 +28,11 @@ additive_make <- function(modes = c("classification", "regression")) {
     # -------------------------------------------------------------------------
 
     for (pkg in dependpkgs) {
-      parsnip::set_dependency(model = model, eng = engine, pkg = pkg)
+      if ("mode" %in% rlang::fn_fmls_names(parsnip::set_dependency)) {
+        parsnip::set_dependency(model, engine, pkg = pkg, mode = mode)
+      } else {
+        parsnip::set_dependency(model, engine, pkg = pkg)
+      }
     }
 
     # -------------------------------------------------------------------------
@@ -384,7 +388,7 @@ additive_make <- function(modes = c("classification", "regression")) {
               }
               threshold <- getOption("class_pred.threshold", 0.5)
               if (is.numeric(threshold)) {
-                if (threshold < 0 & threshold > 1) {
+                if (!dplyr::between(threshold, 0, 1)) {
                   rlang::abort("Probability threshold is out of 0-1 range.")
                 }
               } else {

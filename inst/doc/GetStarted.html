@@ -12,7 +12,7 @@
 
 <meta name="author" content="Hamada S. Badr" />
 
-<meta name="date" content="2021-09-29" />
+<meta name="date" content="2022-01-20" />
 
 <title>Get started with additive</title>
 
@@ -25,6 +25,7 @@
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
     </style>
+
 
 
 <style type="text/css">
@@ -112,7 +113,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Get started with <code>additive</code></h1>
 <h4 class="author">Hamada S. Badr</h4>
-<h4 class="date">2021-09-29</h4>
+<h4 class="date">2022-01-20</h4>
 
 
 
@@ -214,8 +215,9 @@ dat &lt;-<span class="st"> </span><span class="kw">gamSim</span>(<span class="dv
 <p>To extract the parsnip model fit from the workflow</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_fit &lt;-<span class="st"> </span>test_workflow_fit <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">extract_fit_parsnip</span>()</code></pre></div>
-<p>The <code>gamObject</code> object is stored in the <code>fit</code> slot</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gam_fit &lt;-<span class="st"> </span>test_fit<span class="op">$</span>fit</code></pre></div>
+<p>The <code>gamObject</code> object can be extracted as follows</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gam_fit &lt;-<span class="st"> </span>test_workflow_fit <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">extract_fit_engine</span>()</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(gam_fit)</code></pre></div>
 <pre><code>## [1] &quot;gam&quot; &quot;glm&quot; &quot;lm&quot;</code></pre>
 <p>We can use the trained workflow, which includes the fitted model, to conveniently <code>predict</code> using new data without having to worry about all the data reprocessing, which is automatically applied using the workflow preprocessor (recipe).</p>

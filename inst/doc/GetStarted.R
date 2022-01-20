@@ -60,7 +60,8 @@ test_fit <- test_workflow_fit %>%
   extract_fit_parsnip()
 
 ## ----eval = run_on_linux------------------------------------------------------
-gam_fit <- test_fit$fit
+gam_fit <- test_workflow_fit %>%
+  extract_fit_engine()
 
 ## ----eval = run_on_linux------------------------------------------------------
 class(gam_fit)
