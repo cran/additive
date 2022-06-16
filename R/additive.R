@@ -63,8 +63,8 @@
 #' dat <- gamSim(1, n = 400, dist = "normal", scale = 2)
 #'
 #' additive_mod <-
-#'   additive() %>%
-#'   set_engine("mgcv") %>%
+#'   additive() |>
+#'   set_engine("mgcv") |>
 #'   fit(
 #'     y ~ s(x0) + s(x1) + s(x2) + s(x3),
 #'     data = dat
@@ -93,7 +93,6 @@ additive <-
            H = NULL,
            G = NULL,
            offset = NULL,
-           weights = NULL,
            subset = NULL,
            start = NULL,
            etastart = NULL,
@@ -128,7 +127,6 @@ additive <-
       H = rlang::enquo(H),
       G = rlang::enquo(G),
       offset = rlang::enquo(offset),
-      weights = rlang::enquo(weights),
       subset = rlang::enquo(subset),
       start = rlang::enquo(start),
       etastart = rlang::enquo(etastart),
@@ -225,7 +223,6 @@ update.additive <-
            H = NULL,
            G = NULL,
            offset = NULL,
-           weights = NULL,
            subset = NULL,
            start = NULL,
            etastart = NULL,
@@ -243,12 +240,6 @@ update.additive <-
            fit = NULL,
            fresh = FALSE,
            ...) {
-    parsnip::update_dot_check(...)
-
-    if (!is.null(parameters)) {
-      parameters <- parsnip::check_final_param(parameters)
-    }
-
     args <- list(
       fitfunc = rlang::enquo(fitfunc),
       formula.override = rlang::enquo(formula.override),
@@ -268,7 +259,6 @@ update.additive <-
       H = rlang::enquo(H),
       G = rlang::enquo(G),
       offset = rlang::enquo(offset),
-      weights = rlang::enquo(weights),
       subset = rlang::enquo(subset),
       start = rlang::enquo(start),
       etastart = rlang::enquo(etastart),
@@ -286,33 +276,13 @@ update.additive <-
       fit = rlang::enquo(fit)
     )
 
-    args <- parsnip::update_main_parameters(args, parameters)
-
-    eng_args <- parsnip::update_engine_parameters(object$eng_args, ...)
-
-    if (fresh) {
-      object$args <- args
-      object$eng_args <- eng_args
-    } else {
-      null_args <- purrr::map_lgl(args, parsnip::null_value)
-      if (any(null_args)) {
-        args <- args[!null_args]
-      }
-      if (length(args) > 0) {
-        object$args[names(args)] <- args
-      }
-      if (length(eng_args) > 0) {
-        object$eng_args[names(eng_args)] <- eng_args
-      }
-    }
-
-    parsnip::new_model_spec(
-      "additive",
-      args = object$args,
-      eng_args = object$eng_args,
-      mode = object$mode,
-      method = NULL,
-      engine = object$engine
+    parsnip::update_spec(
+      object = object,
+      parameters = parameters,
+      args_enquo_list = args,
+      fresh = fresh,
+      cls = "additive",
+      ...
     )
   }
 
@@ -326,7 +296,7 @@ check_args.additive <- function(object) {
     check_func_val(args$fitfunc)
   }
 
-  if (!is.null(args$select) & !is.logical(args$select)) {
+  if (!is.null(args$select) && !is.logical(args$select)) {
     rlang::abort("`select` should be logical.")
   }
 

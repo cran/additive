@@ -12,7 +12,7 @@
 
 <meta name="author" content="Hamada S. Badr" />
 
-<meta name="date" content="2022-01-20" />
+<meta name="date" content="2022-06-16" />
 
 <title>Get started with additive</title>
 
@@ -81,13 +81,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -113,7 +120,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Get started with <code>additive</code></h1>
 <h4 class="author">Hamada S. Badr</h4>
-<h4 class="date">2022-01-20</h4>
+<h4 class="date">2022-06-16</h4>
 
 
 
@@ -125,10 +132,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 dat &lt;-<span class="st"> </span><span class="kw">gamSim</span>(<span class="dv">1</span>, <span class="dt">n =</span> <span class="dv">400</span>, <span class="dt">dist =</span> <span class="st">&quot;normal&quot;</span>, <span class="dt">scale =</span> <span class="dv">2</span>)</code></pre></div>
 <pre><code>## Gu &amp; Wahba 4 term additive model</code></pre>
 <p>In a first step, we use the <code>recipes</code> package to prepare (a recipe for) the data.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_recipe &lt;-<span class="st"> </span>dat <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">recipe</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">update_role</span>(y, <span class="dt">new_role =</span> <span class="st">&quot;outcome&quot;</span>) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">update_role</span>(x0, x1, x2, x3, <span class="dt">new_role =</span> <span class="st">&quot;predictor&quot;</span>) <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_recipe &lt;-<span class="st"> </span>dat <span class="op">|</span><span class="er">&gt;</span>
+<span class="st">  </span><span class="kw">recipe</span>() <span class="op">|</span><span class="er">&gt;</span>
+<span class="st">  </span><span class="kw">update_role</span>(y, <span class="dt">new_role =</span> <span class="st">&quot;outcome&quot;</span>) <span class="op">|</span><span class="er">&gt;</span>
+<span class="st">  </span><span class="kw">update_role</span>(x0, x1, x2, x3, <span class="dt">new_role =</span> <span class="st">&quot;predictor&quot;</span>) <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">step_normalize</span>(<span class="kw">all_numeric_predictors</span>())</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(test_recipe)</code></pre></div>
 <pre><code>## Recipe
@@ -148,8 +155,8 @@ dat &lt;-<span class="st"> </span><span class="kw">gamSim</span>(<span class="dv
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_model &lt;-<span class="st"> </span><span class="kw">additive</span>(
     <span class="dt">family =</span> <span class="kw">gaussian</span>(),
     <span class="dt">method =</span> <span class="st">&quot;REML&quot;</span>
-  ) <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;mgcv&quot;</span>) <span class="op">%&gt;%</span>
+  ) <span class="op">|</span><span class="er">&gt;</span>
+<span class="st">  </span><span class="kw">set_engine</span>(<span class="st">&quot;mgcv&quot;</span>) <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">set_mode</span>(<span class="st">&quot;regression&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(test_model)</code></pre></div>
 <pre><code>## Generalized Additive Model (GAM) Specification (regression)
@@ -160,11 +167,11 @@ dat &lt;-<span class="st"> </span><span class="kw">gamSim</span>(<span class="dv
 ## 
 ## Computational engine: mgcv</code></pre>
 <p>The <code>additive</code> function is the main function of the package to initialize a Generalized Additive Model (GAM). We can set up a lot of the information directly within the function or update the information later on, via the <code>update</code> method. For example, if we didn't specify the family initially or set it to something else that we now wanted to change, we could use the <code>update</code> method as follows</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_model &lt;-<span class="st"> </span>test_model <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_model &lt;-<span class="st"> </span>test_model <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">update</span>(<span class="dt">family =</span> <span class="kw">gaussian</span>())</code></pre></div>
 <p>Next, we define a workflow via the <code>workflows</code> package, by combining the above defined data processing recipe and the model plus the actual model formula to be passed to the <code>mgcv</code> engine.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">%&gt;%</span>
-<span class="st">  </span><span class="kw">add_recipe</span>(test_recipe) <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow &lt;-<span class="st"> </span><span class="kw">workflow</span>() <span class="op">|</span><span class="er">&gt;</span>
+<span class="st">  </span><span class="kw">add_recipe</span>(test_recipe) <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">add_model</span>(
     <span class="dt">spec =</span> test_model,
     <span class="dt">formula =</span> y <span class="op">~</span><span class="st"> </span><span class="kw">s</span>(x0) <span class="op">+</span><span class="st"> </span><span class="kw">s</span>(x1) <span class="op">+</span><span class="st"> </span><span class="kw">s</span>(x2) <span class="op">+</span><span class="st"> </span><span class="kw">s</span>(x3)
@@ -188,7 +195,7 @@ dat &lt;-<span class="st"> </span><span class="kw">gamSim</span>(<span class="dv
 ## 
 ## Computational engine: mgcv</code></pre>
 <p>We are now ready to fit the model by calling the <code>fit</code> method with the data set we want to train the model on.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow_fit &lt;-<span class="st"> </span>test_workflow <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow_fit &lt;-<span class="st"> </span>test_workflow <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">fit</span>(<span class="dt">data =</span> dat)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(test_workflow_fit)</code></pre></div>
 <pre><code>## ══ Workflow [trained] ══════════════════════════════════════════════════════════
@@ -213,16 +220,16 @@ dat &lt;-<span class="st"> </span><span class="kw">gamSim</span>(<span class="dv
 ## 
 ## REML score: 859.5808</code></pre>
 <p>To extract the parsnip model fit from the workflow</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_fit &lt;-<span class="st"> </span>test_workflow_fit <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_fit &lt;-<span class="st"> </span>test_workflow_fit <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">extract_fit_parsnip</span>()</code></pre></div>
 <p>The <code>gamObject</code> object can be extracted as follows</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gam_fit &lt;-<span class="st"> </span>test_workflow_fit <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gam_fit &lt;-<span class="st"> </span>test_workflow_fit <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">extract_fit_engine</span>()</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(gam_fit)</code></pre></div>
 <pre><code>## [1] &quot;gam&quot; &quot;glm&quot; &quot;lm&quot;</code></pre>
 <p>We can use the trained workflow, which includes the fitted model, to conveniently <code>predict</code> using new data without having to worry about all the data reprocessing, which is automatically applied using the workflow preprocessor (recipe).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">newdata &lt;-<span class="st"> </span>dat[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>, ]</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow_fit <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow_fit <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">predict</span>(
     <span class="dt">new_data =</span> newdata,
     <span class="dt">type =</span> <span class="st">&quot;conf_int&quot;</span>,
@@ -237,7 +244,7 @@ dat &lt;-<span class="st"> </span><span class="kw">gamSim</span>(<span class="dv
 ## 4        4.89        6.40
 ## 5        2.97        4.57</code></pre>
 <p>To add the standard errors on the scale of the linear predictors</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow_fit <span class="op">%&gt;%</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">test_workflow_fit <span class="op">|</span><span class="er">&gt;</span>
 <span class="st">  </span><span class="kw">predict</span>(
     <span class="dt">new_data =</span> newdata,
     <span class="dt">type =</span> <span class="st">&quot;conf_int&quot;</span>,

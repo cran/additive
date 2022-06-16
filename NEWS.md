@@ -1,3 +1,12 @@
+# additive 0.0.5
+
+- Depends on `parsnip >= 1.0.0`
+- Using base R pipe and depends on R >= 4.1.0
+- Supported the use of case weights
+- Supported threshold (inverse probability weights) for multi-class predictions
+- Fixed inconsistent probability (`type = "prob"`) predictions for two-class models
+- Updated package dependencies
+
 # additive 0.0.4
 
 - Updated package website
