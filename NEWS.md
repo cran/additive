@@ -1,3 +1,16 @@
+# additive 1.0.1
+
+- Built vignettes to fix CRAN warnings
+- Replaced `citEntry()` with `bibentry()`
+- Updated citation and invalid URLs
+
+# additive 1.0.0
+
+- Fixed handling of `extended.family` class
+- Fixed multi-class probability (`type = "prob"`) predictions
+- Fixed multi-class confidence-intervals (`type = "conf_int"`) predictions
+- Fixed multi-class prediction-intervals (`type = "pred_int"`) predictions
+
 # additive 0.0.5
 
 - Depends on `parsnip >= 1.0.0`

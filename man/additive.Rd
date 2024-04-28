@@ -117,16 +117,16 @@ if \code{method} is set to a RE/ML method (McCullagh and Nelder, 1989, 9.6).
 }
 
 \item{method}{The smoothing parameter estimation method. \code{"GCV.Cp"} to use GCV for unknown scale parameter and
-Mallows' Cp/UBRE/AIC for known scale. \code{"GACV.Cp"} is equivalent, but using GACV in place of GCV. \code{"REML"} 
+Mallows' Cp/UBRE/AIC for known scale. \code{"GACV.Cp"} is equivalent, but using GACV in place of GCV. \code{"NCV"}
+for neighbourhood cross-validation using the neighbourhood structure speficied by \code{nei} (\code{"QNCV"} for numerically more ribust version).  \code{"REML"} 
 for REML estimation, including of unknown scale, \code{"P-REML"} for REML estimation, but using a Pearson estimate 
 of the scale. \code{"ML"} and \code{"P-ML"} are similar, but using maximum likelihood in place of REML. Beyond the 
-exponential family \code{"REML"} is the default, and the only other option is \code{"ML"}.}
+exponential family \code{"REML"} is the default, and the only other options are \code{"ML"}, \code{"NCV"} or \code{"QNCV"}.}
 
 \item{optimizer}{An array specifying the numerical optimization method to use to optimize the smoothing 
-parameter estimation criterion (given by \code{method}). \code{"perf"} (deprecated) for performance iteration. \code{"outer"} 
-for the more stable direct approach. \code{"outer"} can use several alternative optimizers, specified in the 
-second element of \code{optimizer}: \code{"newton"} (default), \code{"bfgs"}, \code{"optim"}, \code{"nlm"} 
-and \code{"nlm.fd"} (the latter is based entirely on finite differenced derivatives and is very slow). \code{"efs"}
+parameter estimation criterion (given by \code{method}). \code{"outer"} 
+for the direct nested optimization approach. \code{"outer"} can use several alternative optimizers, specified in the 
+second element of \code{optimizer}: \code{"newton"} (default), \code{"bfgs"}, \code{"optim"} or \code{"nlm"}. \code{"efs"}
 for the extended Fellner Schall method of Wood and Fasiolo (2017).}
 
 \item{control}{A list of fit control parameters to replace defaults returned by 
@@ -137,7 +137,7 @@ scale parameter is unknown. 0 signals that the scale parameter is 1  for Poisson
 Note that (RE)ML methods can only work with scale parameter 1 for the Poisson and binomial cases.    
 }
 
-\item{gamma}{Increase this beyond 1 to produce smoother models. \code{gamma} multiplies the effective degrees of freedom in the GCV or UBRE/AIC. code{n/gamma} can be viewed as an effective sample size in the GCV score, and this also enables it to be used with REML/ML. Ignored with P-RE/ML or the \code{efs} optimizer. }
+\item{gamma}{Increase this beyond 1 to produce smoother models. \code{gamma} multiplies the effective degrees of freedom in the GCV or UBRE/AIC. \code{n/gamma} can be viewed as an effective sample size in the GCV score, and this also enables it to be used with REML/ML. Ignored with P-RE/ML or the \code{efs} optimizer. }
 
 \item{knots}{this is an optional list containing user specified knot values to be used for basis construction. 
 For most bases the user simply supplies the knots to be used, which must match up with the \code{k} value
@@ -199,7 +199,7 @@ included in \code{formula} (this used to conform to the behaviour of
 
 \item{mustart}{Initial values for the expected response.}
 
-\item{drop.intercept}{Set to \code{TRUE} to force the model to really not have the a constant in the parametric model part,
+\item{drop.intercept}{Set to \code{TRUE} to force the model to really not have a constant in the parametric model part,
 even with factor variables present. Can be vector when \code{formula} is a list.}
 
 \item{drop.unused.levels}{by default unused levels are dropped from factors before fitting. For some smooths 
@@ -214,7 +214,7 @@ single machine). See details and example code.
 If \code{NA} set to \code{max(1,length(cluster))}. See details.}
 
 \item{gc.level}{to keep the memory footprint down, it can help to call the garbage collector often, but this takes 
-a substatial amount of time. Setting this to zero means that garbage collection only happens when R decides it should. Setting to 2 gives frequent garbage collection. 1 is in between. Not as much of a problem as it used to be.
+a substatial amount of time. Setting this to zero means that garbage collection only happens when R decides it should. Setting to 2 gives frequent garbage collection. 1 is in between. Not as much of a problem as it used to be, but can really matter for very large datasets.
 }
 
 \item{use.chol}{By default \code{bam} uses a very stable QR update approach to obtaining the QR decomposition
